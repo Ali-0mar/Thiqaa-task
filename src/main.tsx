@@ -7,7 +7,9 @@ import {
 } from "react-router-dom";
 import Signup from "./Pages/Signup/Signup.tsx";
 import Login from "./Pages/Login/Login.tsx";
-const isAuthenticated = true;
+import {UserProvider} from "./Context/AuthContext.tsx";
+import ClassesList from "./Pages/ClassesList/ClassesList.tsx";
+const isAuthenticated = false;
 const router = createBrowserRouter([
     {
         path: "/",
@@ -21,9 +23,15 @@ const router = createBrowserRouter([
         path: "/login",
         element: <Login />,
     },
+    {
+        path: "/classes",
+        element: <ClassesList />,
+    },
 ]);
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-      <RouterProvider router={router} />
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
   </React.StrictMode>,
 )
