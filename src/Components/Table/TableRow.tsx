@@ -9,6 +9,7 @@ interface Props<T> {
 }
 
 const TableRowItem = styled("tr", {
+    height: "50px",
     cursor: "auto",
     "&:nth-child(odd)": {
         backgroundColor: "#f9f9f9",

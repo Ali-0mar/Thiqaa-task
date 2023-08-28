@@ -9,6 +9,7 @@ import Signup from "./Pages/Signup/Signup.tsx";
 import Login from "./Pages/Login/Login.tsx";
 import {UserProvider} from "./Context/AuthContext.tsx";
 import ClassesList from "./Pages/ClassesList/ClassesList.tsx";
+import BookingForm from "./Pages/ScheduleClass/ScheduleClass.tsx";
 const isAuthenticated = false;
 const router = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
         path: "/classes",
         element: <ClassesList />,
     },
+    {
+        path: "/new-session",
+        element: <BookingForm/>
+    }
 ]);
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

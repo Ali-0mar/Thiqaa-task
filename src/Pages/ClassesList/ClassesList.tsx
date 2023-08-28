@@ -2,8 +2,12 @@ import "@fontsource/anek-telugu";
 // import { styled } from "@stitches/react";
 import "./ClassessList.scss"
 import { Table, IColumnType } from "../../Components/Table/Table";
+import {useNavigate} from "react-router-dom";
 const ClassesList = () => {
-
+const navigate = useNavigate();
+    const handleNavigate = ()=> {
+        navigate("/new-session")
+    }
     interface IData {
         subject: string;
         instructor: string;
@@ -64,15 +68,18 @@ const ClassesList = () => {
     ];
 
     return (
-        <div>
+        <div className="classes-list-page">
             <div className='header-3'>
                 <h3>Your upcoming classes: </h3>
             </div>
             <div className="table-container">
                 <Table data={data} columns={columns} />
             </div>
-            <div>
-                <button className="btn">Book another class</button>
+            <div className="button-container">
+                <button
+                  onClick={handleNavigate}
+                  className="btn"
+                >Book another class</button>
             </div>
         </div>
     )

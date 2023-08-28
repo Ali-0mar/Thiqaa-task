@@ -1,4 +1,3 @@
-// @/src/components/Table.tsx
 import { styled } from "@stitches/react";
 
 import { TableHeader } from "./TableHeader";
@@ -19,7 +18,7 @@ interface Props<T> {
 const TableWrapper = styled("table", {
     borderCollapse: "collapse",
     border: "none",
-    fontFamily: "Anek Telugu",
+    fontFamily: "Arial",
 });
 
 export function Table<T>({ data, columns }: Props<T>): JSX.Element {
