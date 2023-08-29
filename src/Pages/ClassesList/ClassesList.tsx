@@ -3,77 +3,57 @@ import "@fontsource/anek-telugu";
 import "./ClassessList.scss"
 import { Table, IColumnType } from "../../Components/Table/Table";
 import {useNavigate} from "react-router-dom";
+import {getStudentSessions} from "../../Services/Sessions/SessionsService";
+import {useEffect, useState} from "react";
+import ISession from "../../Interfaces/ISession.ts";
+import {useUserContext} from "../../Context/AuthContext.tsx";
 const ClassesList = () => {
-const navigate = useNavigate();
+    const [classes, setClasses]=  useState<ISession[]>([]);
+    const {activeUser}= useUserContext();
+    const navigate = useNavigate();
     const handleNavigate = ()=> {
         navigate("/new-session")
     }
-    interface IData {
-        subject: string;
-        instructor: string;
-        day: string;
-        time: string
-    }
 
-    // const Span = styled("span", {
-    //     background: "#596b7e",
-    //     color: "white",
-    //     paddingLeft: 10,
-    //     paddingRight: 10,
-    //     borderRadius: 99999,
-    // });
 
-    const columns: IColumnType<IData>[] = [
+    const columns: IColumnType<ISession>[] = [
         {
-            key: "subject",
-            title: "Subject",
+            key: "instructorName",
+            title: "Instructor Name",
             width: 200,
         },
         {
-            key: "instructor",
-            title: "Instructor",
+            key: "sessionDate",
+            title: "Session Date",
             width: 200,
-        },
-        {
-            key: "day",
-            title: "Day",
-            width: 200,
+            render: (_,i) => {
+                return new Date(i.sessionsDate).toLocaleDateString()
+            }
         },
         {
             key: "time",
-            title: "Time    ",
+            title: "Time",
             width: 200,
+            render: (_,i) =>{
+                return `${i.startTime} - ${i.endTime}`
+            }
         },
     ];
 
-    const data: IData[] = [
-        {
-            subject: "Math",
-            instructor: "Francisco Mendes",
-            day: "Monday 28-8-2023",
-            time: '11:00 - 12:00'
-        },
-        {
-            subject: "English",
-            instructor: "Francisco Mendes",
-            day: "Monday 28-8-2023",
-            time: '12:00 - 13:00'
-        },
-        {
-            subject: "Physics",
-            instructor: "Francisco Mendes",
-            day: "Monday 28-8-2023",
-            time: '13:00 - 14:00'
-        },
-    ];
 
+    useEffect(() =>{
+        if(activeUser && activeUser.id !==  undefined) {
+            const sessions = getStudentSessions(activeUser.id);
+            setClasses(sessions);
+        }
+    },[])
     return (
         <div className="classes-list-page">
             <div className='header-3'>
                 <h3>Your upcoming classes: </h3>
             </div>
             <div className="table-container">
-                <Table data={data} columns={columns} />
+                <Table data={classes} columns={columns} />
             </div>
             <div className="button-container">
                 <button

@@ -5,7 +5,7 @@ interface TimeCardProps {
     clickHandler: () =>void
 }
 const TimeCard: React.FC<TimeCardProps> = ({ timeRange, clickHandler }) => {
-    const [start, end] = timeRange?.split("-")
+    const [start, end] = timeRange.split("-")
     return (
         <div
             style={{

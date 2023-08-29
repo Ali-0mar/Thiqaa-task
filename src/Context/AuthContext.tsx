@@ -56,14 +56,18 @@ export function UserProvider({ children }: UserProviderProps): ReactElement {
         if (users && match) {
             return false;
         }
+        const transformedUserData = {
+            id: users ? users.length + 1 : 1,
+            ...userData
+        }
         localStorage.setItem("users", JSON.stringify([
                 ...(users ?? []),
                 {
-                    ...userData
+                    ...transformedUserData
                 }
             ]
         ));
-        setActiveUser(userData);
+        setActiveUser(transformedUserData);
         return true;
     }
 

@@ -20,7 +20,7 @@ const TableRowItem = styled("tr", {
     },
 });
 
-export function TableRow<T>({ data, columns }: Props<T>): JSX.Element {
+export function TableRow<T>({ data, columns }: Props<T>) {
     return (
         <>
             {data.map((item, itemIndex) => (

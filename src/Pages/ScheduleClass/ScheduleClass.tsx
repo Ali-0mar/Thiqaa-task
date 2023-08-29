@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import {useEffect, useState} from 'react';
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './ScheduleClass.scss';
@@ -6,150 +6,60 @@ import {splitTimeRange} from "../../Helpers/TimeHelpers";
 import InstructorCard from "../../Components/InstructorCard/InstructorCard.tsx";
 import TimeCard from "../../Components/TimeCard/TimeCard.tsx";
 import {useUserContext} from "../../Context/AuthContext.tsx";
-interface IInstructor {id: number, value: string, label: string, image: string, availableTimes: object[]};
-const instructors: IInstructor[] = [
-  {
-    id: 0,
-    value: 'instructor1',
-    label: 'Instructor 1',
-    image: "user",
-    availableTimes: [
-      {
-        day: 'saturday',
-        start: '11:00',
-        to: '21:00'
-      },
-      {
-        day: 'sunday',
-        start: '11:00',
-        to: '21:00'
-      },
-      {
-        day: 'monday',
-        start: '11:00',
-        to: '21:00'
-      },
-      {
-        day: 'tuesday',
-        start: '11:00',
-        to: '21:00'
-      },
-      {
-        day: 'wednesday',
-        start: '11:00',
-        to: '21:00'
-      },
-      {
-        day: 'thursday',
-        start: '11:00',
-        to: '21:00'
-      },
-    ]
-  },
-  {
-    id: 1,
-    value: 'instructor2',
-    label: 'Instructor 2',
-    image: "user",
-    availableTimes: [
-      {
-        day: 'saturday',
-        start: '16:00',
-        to: '21:00'
-      },
-      {
-        day: 'sunday',
-        start: '16:00',
-        to: '21:00'
-      },
-      {
-        day: 'monday',
-        start: '16:00',
-        to: '21:00'
-      },
-      {
-        day: 'tuesday',
-        start: '16:00',
-        to: '21:00'
-      },
-      {
-        day: 'wednesday',
-        start: '16:00',
-        to: '21:00'
-      },
-      {
-        day: 'thursday',
-        start: '16:00',
-        to: '21:00'
-      },
-    ]
-  },
-  {
-    id: 2,
-    value: 'instructor3',
-    label: 'Instructor 3',
-    image: "user",
-    availableTimes: [
-      {
-        day: 'saturday',
-        start: '10:00',
-        to: '22:00'
-      },
-      {
-        day: 'monday',
-        start: '17:00',
-        to: '23:00'
-      },
-      {
-        day: 'tuesday',
-        start: '17:00',
-        to: '23:00'
-      },
-      {
-        day: 'wednesday',
-        start: '17:00',
-        to: '23:00'
-      },
-    ]
-  }
-];
-
-const  daysOfWeek = {
-  0: "sunday",
-  1: "monday",
-  2: "tuesday",
-  3: "wednesday",
-  4: "thursday",
-  6: "saturday",
-  }
+import ISession from "../../Interfaces/ISession.ts";
+import IInstructor, {timeSlot} from "../../Interfaces/IInstructor.ts";
+import instructors from "../../StaticData/Instructors.ts";
+import {bookNewSessions, getInstructorSessions} from "../../Services/Sessions/SessionsService"
+import {useNavigate} from "react-router-dom";
+enum  daysOfWeek {
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "_",
+  "saturday",
+}
 
 
 const BookingForm = () => {
   const [selectedInstructor, setSelectedInstructor] = useState<IInstructor>();
-  const [intervals, setIntervals] = useState([]);
+  const [intervals, setIntervals] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const {activeUser} = useUserContext();
-  const handleInstructorSelect = (e) => {
+  const navigate = useNavigate();
+  const handleInstructorSelect = (instructor: IInstructor) => {
     setIntervals([])
-    setSelectedInstructor(e);
+    setSelectedInstructor(instructor);
   }
 
-  const filterDate = (date: Date) =>{
+  const filterDate = (date: Date): boolean =>{
     const day = new Date(date).getDay();
-    return day != 5 && (selectedInstructor &&
-        !selectedInstructor?.availableTimes.map((time: any) => daysOfWeek[time.day]).includes(day)
-    )
+    const daysArr = selectedInstructor?.
+                                  availableTimes.
+                                  map((time: timeSlot) => daysOfWeek[time.day]) ?? [];
+    return daysArr.includes(day)
   }
   const handleDatePickerChanged = (e: Date) => {
-    setSelectedDate(e)
+    console.log()
     const selectedDay: string = daysOfWeek[e.getDay()];
+    setSelectedDate(e)
     calculateHours(selectedDay)
   }
   const calculateHours = (day: string ) =>{
-    const [{start, to}] = selectedInstructor && selectedInstructor.availableTimes.filter((time: any) =>time.day == day
+    if(!selectedInstructor || !selectedDate) {
+      return;
+    }
+    const availableTimes = selectedInstructor?.availableTimes.
+              filter((time: timeSlot) =>time.day == day) ?? [];
+    const [{start, end}] = availableTimes;
+    const instructorIntervals = splitTimeRange(start, end);
+    const instructorBookedSessions = getInstructorSessions(selectedInstructor.id, selectedDate).map((session)=>
+      `${session.startTime}-${session.endTime}`
     );
-     setIntervals(splitTimeRange(start, to));
-    console.log(intervals)
+    const availableInstructorIntervals = instructorIntervals.filter((interval: string)=>
+        !instructorBookedSessions.includes(interval))
+     setIntervals(availableInstructorIntervals);
   }
   const handleTimeChange = (interval: string) => {
     const [start, end] = interval.split("-");
@@ -160,16 +70,25 @@ const BookingForm = () => {
         parseInt(start)
     )
     console.log(activeUser)
-    const sessionInfo = {
-      instructorId: selectedInstructor?.id,
-      studentId: activeUser?.id,
-      date: sessionDate,
-      start,
-      end
-
+      const sessionInfo: ISession = {
+        instructorId: selectedInstructor!.id,
+        // I Added the constructor name to the session entity for simplicity in the normal case I will store the id only
+        // and populate the instructor using on the DB server or use provide in case I'm using GraphQL
+        instructorName: selectedInstructor!.name,
+        studentId: activeUser!.id!,
+        sessionsDate: sessionDate,
+        startTime: start,
+        endTime: end
     }
-    console.log(sessionInfo)
+      bookNewSessions(sessionInfo);
+      navigate("/classes")
+      console.log(sessionInfo)
   }
+  useEffect(() => {
+    if (selectedDate) {
+      calculateHours(daysOfWeek[selectedDate.getDay()]);
+    }
+  }, [selectedDate]);
   return (
       <div className='booking-container'>
         <span> Please select an instructor:</span>
@@ -177,8 +96,9 @@ const BookingForm = () => {
           {
             instructors && instructors.map((ins) => {
               return <InstructorCard
+                  key={ins.id}
                   image={ins.image}
-                  name={ins.label}
+                  name={ins.name}
                   clickHandler={() =>handleInstructorSelect(ins)}
               />
               })

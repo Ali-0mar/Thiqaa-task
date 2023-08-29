@@ -1,12 +1,11 @@
+
 interface Time {
     hour: number;
     minute: number;
 }
 
 export function splitTimeRange(startTimeStr: string, endTimeStr: string): string[] {
-    console.log(startTimeStr);
-    console.log(endTimeStr);
-
+    if(!startTimeStr || !endTimeStr) { return [] }
     const startTime: Time = parseTime(startTimeStr);
     const endTime: Time = parseTime(endTimeStr);
 
@@ -18,7 +17,7 @@ export function splitTimeRange(startTimeStr: string, endTimeStr: string): string
     while (currentHour < endTime.hour || (currentHour === endTime.hour && currentMinute <= endTime.minute)) {
         const intervalStart: string = formatTime({ hour: currentHour, minute: currentMinute });
 
-        currentMinute += 60; // Add 60 minutes to move to the next hour
+        currentMinute += 60;
         if (currentMinute >= 60) {
             currentHour++;
             currentMinute -= 60;

@@ -1,56 +1,10 @@
-.signup-container {
-    display: flex;
+.auth-page {
     height: 100%;
-    align-items: center;
-    justify-content: center;
-}
-.form-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    width: 25%;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 15px;
-    box-shadow: 3px 3px 5px rgb(0 0 0 / 5%);
-    background: #fff;
-    min-height: 510px;
-    .logo {
-        width: 70%;
-        height: 125px;
-        border-radius: 50%;
-    }
-    img {
-        width: 100%;
-        height: 100%;
-    }
+    justify-content: center;
 }
-
-.from-up {
-    //margin: 10% auto;
-    display: grid;
-    align-items: center;
-    align-content: stretch;
-    width: 100%;
+.auth-mode {
     margin-top: 1rem;
 }
-.from-up .btn {
-    margin: 1rem auto;
-}
-.from-up label {
-    margin-top: 0.5rem;
-}
-
-//@media (min-width: 668px) {
-//    .from-up {
-//        max-width: 60%;
-//        margin: auto;
-//    }
-//}
-//
-//@media (min-width: 1024px) {
-//    .from-up {
-//        max-width: 30%;
-//    }
-//}
