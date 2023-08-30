@@ -6,7 +6,7 @@
     3- npm run dev will run the application on http://localhost:5173/
 
   - Keynotes about the application:
-      1- I wanted to build the backend also but duo to lack of time I've built only the front-end and used the browser localStorage API for string data.
+      1- I wanted to build the backend also but duo to lack of time I've built only the front-end and used the browser localStorage API for string data (Another valid approach would been to use an in-memory solution like Redi).
       2- I modeled the data used in the application for simplicity as follows:
 
         The student entity: 
